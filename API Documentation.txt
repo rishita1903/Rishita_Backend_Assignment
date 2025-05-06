@@ -1,0 +1,233 @@
+# Task Management API Documentation
+
+## Authentication Endpoints
+
+### Register a New User
+- **POST** `/auth/register`
+- **Request Body:**
+```json
+{
+  "username": "testuser",
+  "email": "test@example.com",
+  "password": "password123"
+}
+```
+- **Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "user": {
+      "id": 1,
+      "username": "testuser",
+      "email": "test@example.com",
+      "createdAt": "2024-03-14T12:00:00.000Z"
+    },
+    "token": "jwt_token_here"
+  }
+}
+```
+
+### Login
+- **POST** `/auth/login`
+- **Request Body:**
+```json
+{
+  "email": "test@example.com",
+  "password": "password123"
+}
+```
+- **Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "user": {
+      "id": 1,
+      "username": "testuser",
+      "email": "test@example.com",
+      "createdAt": "2024-03-14T12:00:00.000Z"
+    },
+    "token": "jwt_token_here"
+  }
+}
+```
+
+---
+
+## Task Endpoints
+
+> **All task endpoints require authentication.**
+> Add the header: `Authorization: Bearer your_token_here`
+
+### Get All Tasks (with Pagination, Sorting, Filtering)
+- **GET** `/tasks`
+- **Query Parameters:**
+  - `page`: Page number (default: 1)
+  - `limit`: Items per page (default: 10)
+  - `sortBy`: Field to sort by (default: createdAt)
+  - `order`: Sort order (`asc` or `desc`, default: desc)
+  - `completed`: Filter by completion status (`true` or `false`)
+  - `title`: Filter by title (case-insensitive)
+  - `description`: Filter by description (case-insensitive)
+- **Response:**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "title": "Example Task",
+      "description": "This is an example task",
+      "completed": false,
+      "createdAt": "2024-03-14T12:00:00.000Z",
+      "userId": 1
+    }
+  ],
+  "pagination": {
+    "currentPage": 1,
+    "totalPages": 1,
+    "totalTasks": 1,
+    "tasksPerPage": 10
+  }
+}
+```
+
+### Get a Single Task
+- **GET** `/tasks/:id`
+- **Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "title": "Example Task",
+    "description": "This is an example task",
+    "completed": false,
+    "createdAt": "2024-03-14T12:00:00.000Z",
+    "userId": 1
+  }
+}
+```
+
+### Create a Task
+- **POST** `/tasks`
+- **Request Body:**
+```json
+{
+  "title": "New Task",
+  "description": "This is a new task"
+}
+```
+- **Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "title": "New Task",
+    "description": "This is a new task",
+    "completed": false,
+    "createdAt": "2024-03-14T12:00:00.000Z",
+    "userId": 1
+  }
+}
+```
+
+### Update a Task
+- **PUT** `/tasks/:id`
+- **Request Body:**
+```json
+{
+  "title": "Updated Task",
+  "description": "This is an updated task"
+}
+```
+- **Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "title": "Updated Task",
+    "description": "This is an updated task",
+    "completed": false,
+    "createdAt": "2024-03-14T12:00:00.000Z",
+    "updatedAt": "2024-03-14T12:30:00.000Z",
+    "userId": 1
+  }
+}
+```
+
+### Delete a Task
+- **DELETE** `/tasks/:id`
+- **Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "title": "Example Task",
+    "description": "This is an example task",
+    "completed": false,
+    "createdAt": "2024-03-14T12:00:00.000Z",
+    "userId": 1
+  }
+}
+```
+
+---
+
+## Error Responses
+- **401 Unauthorized:** No or invalid token provided
+- **403 Forbidden:** Not authorized to access or modify the resource
+- **404 Not Found:** Resource does not exist
+- **400 Bad Request:** Missing required fields or invalid data
+- **500 Internal Server Error:** Unexpected server error
+
+**Error response format:**
+```json
+{
+  "success": false,
+  "message": "Error message"
+}
+```
+
+---
+
+## Notes
+- Always include the `Authorization` header for protected endpoints:
+  - `Authorization: Bearer your_token_here`
+- Use the token received from `/auth/register` or `/auth/login`.
+- Pagination, sorting, and filtering are available on the GET `/tasks` endpoint via query parameters.
+
+## Sorting Examples
+
+You can sort tasks by any field (e.g., `title`, `createdAt`) using the `sortBy` and `order` query parameters.
+
+### Sort by Title (Ascending)
+- **GET** `/tasks?sortBy=title&order=asc`
+- Headers:
+  - `Authorization`: `Bearer your_token_here`
+- **Expected:** Tasks are sorted alphabetically by title (A → Z).
+
+### Sort by Title (Descending)
+- **GET** `/tasks?sortBy=title&order=desc`
+- Headers:
+  - `Authorization`: `Bearer your_token_here`
+- **Expected:** Tasks are sorted in reverse alphabetical order (Z → A).
+
+### Sort by CreatedAt (Newest First)
+- **GET** `/tasks?sortBy=createdAt&order=desc`
+- Headers:
+  - `Authorization`: `Bearer your_token_here`
+- **Expected:** Most recently created tasks appear first.
+
+### Sort by CreatedAt (Oldest First)
+- **GET** `/tasks?sortBy=createdAt&order=asc`
+- Headers:
+  - `Authorization`: `Bearer your_token_here`
+- **Expected:** Oldest tasks appear first.
+
+You can combine sorting with pagination and filtering as needed:
+- Example: `/tasks?sortBy=title&order=asc&page=1&limit=2`
