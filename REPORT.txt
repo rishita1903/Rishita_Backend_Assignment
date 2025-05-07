@@ -1,0 +1,59 @@
+# Project Report: Task Management API
+
+## Introduction
+This project is a simple RESTful API for managing tasks (to-do items) using Node.js and Express.js. The API supports CRUD operations, user authentication, and advanced features like pagination, sorting, and filtering. All data is stored in memory for simplicity.
+
+---
+
+## Approach & Architecture
+- **Framework:** Used Express.js for its simplicity and popularity in building REST APIs.
+- **Project Structure:** Separated routes, middleware, and logic for clarity and maintainability.
+- **In-Memory Storage:** Used JavaScript arrays for storing users and tasks, as no database was required. This makes the API stateless and easy to reset for testing.
+
+---
+
+## Core Features & Algorithm Choices
+
+### 1. **CRUD Operations for Tasks**
+- Each task is an object with fields: `id`, `title`, `description`, `completed`, `createdAt`, `updatedAt`, and `userId`.
+- Tasks are stored in an array. IDs are auto-incremented.
+- CRUD endpoints (`POST`, `GET`, `PUT`, `DELETE`) are implemented using Express route handlers.
+
+### 2. **Validation**
+- Middleware checks for required fields (`title`, `description`) before creating or updating a task.
+- Registration also validates for unique email and required fields.
+
+### 3. **Authentication & Authorization**
+- Used JWT (JSON Web Tokens) for stateless authentication.
+- Passwords are hashed with bcryptjs for security.
+- Only authenticated users can access task endpoints.
+- Each task is linked to a user (`userId`), and only the owner can update or delete their tasks.
+
+### 4. **Pagination**
+- Implemented by slicing the filtered and sorted tasks array based on `page` and `limit` query parameters.
+- This reduces the amount of data sent per request and improves usability for large lists.
+
+### 5. **Sorting**
+- Sorting is handled by a helper function that sorts the tasks array by any field (e.g., `title`, `createdAt`) and order (`asc` or `desc`).
+- This is done using JavaScript's `sort()` method for flexibility and simplicity.
+
+### 6. **Filtering**
+- Filtering is implemented by checking each task against query parameters (`completed`, `title`, `description`).
+- This allows users to quickly find relevant tasks without extra endpoints.
+
+### 7. **Error Handling**
+- Centralized error handling middleware returns consistent error responses.
+- Uses appropriate HTTP status codes (400, 401, 403, 404, 500) for clarity.
+
+---
+
+## Design Rationale
+- **Simplicity:** In-memory storage and Express.js make the API easy to understand and modify, ideal for learning and small projects.
+- **Security:** JWT and bcryptjs provide basic but effective security for authentication.
+- **Extensibility:** The modular structure allows for easy addition of new features (e.g., database integration, more filters).
+- **User Experience:** Pagination, sorting, and filtering make the API practical for real-world use, even with large data sets.
+
+---
+
+## Conclusion
+This API demonstrates best practices for building a RESTful service with Node.js and Express.js, including modular design, validation, authentication, and user-friendly data retrieval. The choices made prioritize clarity, security, and extensibility for future development.
